@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
-import Select from "react-select"; // <-- Import react-select
+import Select from "react-select";
 
 export default function PublicationForm() {
   const [form, setForm] = useState({
     title: "",
-    authors: [], // <-- Authors will now be an array of selected options
+    authors: [],
     year: "",
     journal: "",
+    volume: "",
+    issue: "",
+    pages: "",
+    doi: ""
   });
 
-  // New state to hold the list of all faculty members for the dropdown
   const [facultyOptions, setFacultyOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // To handle loading state
+  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect hook to fetch all faculty when the component loads
   useEffect(() => {
     const fetchFaculty = async () => {
       try {
@@ -22,7 +24,6 @@ export default function PublicationForm() {
         const data = await res.json();
 
         if (data.success) {
-          // Format the fetched data for react-select: { value: 'someId', label: 'Some Name' }
           const options = data.faculties.map((faculty) => ({
             value: faculty._id,
             label: `${faculty.firstName} ${faculty.lastName}`,
@@ -38,13 +39,12 @@ export default function PublicationForm() {
     };
 
     fetchFaculty();
-  }, []); // The empty dependency array [] means this runs once on mount
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   
-  // Special handler for the react-select component
   const handleAuthorChange = (selectedOptions) => {
     setForm({ ...form, authors: selectedOptions });
   };
@@ -52,13 +52,11 @@ export default function PublicationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if any author is selected
     if (form.authors.length === 0) {
       alert("Please select at least one author.");
       return;
     }
 
-    // Extract just the IDs from the selected author objects
     const authorIds = form.authors.map(author => author.value);
 
     try {
@@ -66,17 +64,32 @@ export default function PublicationForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...form,
-          authors: authorIds, // <-- Send the array of IDs
+          title: form.title,
+          authors: authorIds,
+          year: parseInt(form.year),
+          journal: form.journal,
+          volume: form.volume,
+          issue: form.issue,
+          pages: form.pages,
+          doi: form.doi
         }),
       });
 
       if (pubRes.ok) {
         alert("Publication added successfully!");
-        setForm({ title: "", authors: [], year: "", journal: "" });
+        setForm({ 
+          title: "", 
+          authors: [], 
+          year: "", 
+          journal: "",
+          volume: "",
+          issue: "",
+          pages: "",
+          doi: ""
+        });
       } else {
         const errorData = await pubRes.json();
-        alert(`Error: ${errorData.message || 'Failed to add publication'}`);
+        alert(`Error: ${errorData.message || errorData.error || 'Failed to add publication'}`);
       }
     } catch (err) {
       console.error(err);
@@ -87,9 +100,9 @@ export default function PublicationForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md"
+      className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md"
     >
-      <h2 className="text-xl font-bold mb-4">Add Publication</h2>
+      <h2 className="text-2xl font-bold mb-6">Add Publication</h2>
 
       <input
         type="text"
@@ -101,20 +114,21 @@ export default function PublicationForm() {
         required
       />
 
-      {/* --- This is the new Dropdown --- */}
-      <Select
-        isMulti // Allows selecting multiple authors
-        name="authors"
-        options={facultyOptions}
-        className="w-full mb-3"
-        classNamePrefix="select"
-        placeholder="Select Authors..."
-        onChange={handleAuthorChange}
-        value={form.authors}
-        isLoading={isLoading}
-        required
-      />
-      {/* --- End of new Dropdown --- */}
+      <div className="mb-3">
+        <label className="block text-sm font-medium mb-1">Authors *</label>
+        <Select
+          isMulti
+          name="authors"
+          options={facultyOptions}
+          className="w-full"
+          classNamePrefix="select"
+          placeholder="Select Authors..."
+          onChange={handleAuthorChange}
+          value={form.authors}
+          isLoading={isLoading}
+          required
+        />
+      </div>
 
       <input
         type="number"
@@ -133,11 +147,49 @@ export default function PublicationForm() {
         value={form.journal}
         onChange={handleChange}
         className="w-full mb-3 p-2 border rounded"
+        required
+      />
+
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <input
+          type="text"
+          name="volume"
+          placeholder="Volume"
+          value={form.volume}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="text"
+          name="issue"
+          placeholder="Issue"
+          value={form.issue}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <input
+        type="text"
+        name="pages"
+        placeholder="Pages (e.g., 1-10)"
+        value={form.pages}
+        onChange={handleChange}
+        className="w-full mb-3 p-2 border rounded"
+      />
+
+      <input
+        type="text"
+        name="doi"
+        placeholder="DOI"
+        value={form.doi}
+        onChange={handleChange}
+        className="w-full mb-3 p-2 border rounded"
       />
 
       <button
         type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
         Submit
       </button>

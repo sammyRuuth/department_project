@@ -1,4 +1,9 @@
 const Project = require("../models/projectsModel");
+const XLSX = require("xlsx");
+const path = require("path");
+const fs = require("fs");
+const Faculty = require("../models/facultyModels");
+
 
 // Create a new project
 const createProject = async (req, res) => {
@@ -128,4 +133,116 @@ const getProjectsByFacultyId = async (req, res) => {
   }
 };
 
-module.exports = { createProject, getAllProjects, updateProject, deleteProject, getProjectsByFacultyId };
+// Bulk upload projects from Excel file
+const bulkUploadProjects = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    // ✅ FIX: Use req.file.path directly (no path.join)
+    const workbook = XLSX.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0];
+    const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    const inserted = [];
+
+    for (const row of sheetData) {
+      const projectTitle = row["Project Title"]?.trim();
+      const piName = row["PI"]?.trim();
+      const coPiName = row["Co-PI"]?.trim();
+      const collaborator = row["Collaborator"]?.trim() || "";
+      const fundingAgency = row["Funding Agency"]?.trim();
+      const dateSanctioned = row["Date Sanctioned"] ? new Date(row["Date Sanctioned"]) : null;
+      const dateCompletion = row["Date Completion"] ? new Date(row["Date Completion"]) : null;
+      const status = row["Status"]?.trim();
+      const notableAchievements = row["Notable Achievements"]
+        ? row["Notable Achievements"].split(";").map(a => a.trim())
+        : [];
+      const sanctionLetterLink = row["Sanction Letter Link"]?.trim() || "";
+      const totalINR = row["Total INR"] ? Number(row["Total INR"]) : null;
+      const type = row["Type"]?.trim(); // National / International
+      const category = row["Category"]?.trim(); // Government / Industry
+
+      // Skip invalid rows
+      if (
+        !projectTitle ||
+        !piName ||
+        !fundingAgency ||
+        !dateSanctioned ||
+        !dateCompletion ||
+        !status ||
+        !totalINR ||
+        !type ||
+        !category
+      ) {
+        continue;
+      }
+
+      // ✅ Lookup PI and Co-PI in Faculty collection
+      const projectPI = await Faculty.findOne({
+        $or: [
+          { fullName: { $regex: new RegExp(`^${piName}$`, "i") } },
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $concat: ["$firstName", " ", "$lastName"] },
+                regex: new RegExp(`^${piName}$`, "i"),
+              },
+            },
+          },
+        ],
+      });
+
+      const projectCoPI = coPiName
+        ? await Faculty.findOne({
+            $or: [
+              { fullName: { $regex: new RegExp(`^${coPiName}$`, "i") } },
+              {
+                $expr: {
+                  $regexMatch: {
+                    input: { $concat: ["$firstName", " ", "$lastName"] },
+                    regex: new RegExp(`^${coPiName}$`, "i"),
+                  },
+                },
+              },
+            ],
+          })
+        : null;
+
+      const project = new Project({
+        projectTitle,
+        projectPI: projectPI ? projectPI._id : null,
+        projectCoPI: projectCoPI ? projectCoPI._id : null,
+        collaborator,
+        fundingAgency,
+        dateSanctioned,
+        dateCompletion,
+        status,
+        notableAchievements,
+        sanctionLetterLink,
+        totalINR,
+        type,
+        category,
+      });
+
+      await project.save();
+      inserted.push(project);
+    }
+
+    // ✅ Clean up temp file after upload
+    fs.unlinkSync(req.file.path);
+
+    res.status(201).json({
+      success: true,
+      message: `${inserted.length} projects uploaded successfully`,
+      projects: inserted,
+    });
+  } catch (error) {
+    console.error("Bulk upload error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+module.exports = { createProject, getAllProjects, updateProject, deleteProject, getProjectsByFacultyId, bulkUploadProjects };
