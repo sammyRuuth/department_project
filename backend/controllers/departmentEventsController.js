@@ -94,15 +94,28 @@ const bulkUploadDepartmentEvents = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const title = row["Title"]?.trim();
-      const type = row["Type"]?.trim() || "Event";
-      const description = row["Description"]?.trim() || "";
-      const dateStr = row["Date"]?.trim();
-      const organizedBy = row["OrganizedBy"]?.trim() || "Department";
+      // Convert to string first, then trim
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const type = row["Type"] ? String(row["Type"]).trim() : "Event";
+      const description = row["Description"] ? String(row["Description"]).trim() : "";
+      const dateStr = row["Date"] ? String(row["Date"]).trim() : "";
+      const organizedBy = row["OrganizedBy"] ? String(row["OrganizedBy"]).trim() : "Department";
 
       if (!title || !dateStr) continue; // skip invalid rows
 
-      const date = new Date(dateStr);
+      // Try parsing date
+      let date;
+      
+      // Check if it's an Excel serial number (typically > 40000 for recent dates)
+      if (!isNaN(dateStr) && Number(dateStr) > 40000) {
+        // Excel date serial number to JS Date
+        const excelEpoch = new Date(1899, 11, 30);
+        date = new Date(excelEpoch.getTime() + Number(dateStr) * 86400000);
+      } else {
+        // Regular date string
+        date = new Date(dateStr);
+      }
+      
       if (isNaN(date)) continue; // skip invalid date
 
       const event = new DepartmentEvent({

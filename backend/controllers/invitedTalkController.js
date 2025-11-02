@@ -62,7 +62,6 @@ exports.deleteTalk = async (req, res) => {
 };
 
 // EXPORT FROM EXCEL
-
 exports.bulkUploadTalks = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
@@ -75,14 +74,15 @@ exports.bulkUploadTalks = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const speaker = row["Speaker"]?.trim();
-      const title = row["Title"]?.trim();
-      const event = row["Event"]?.trim() || "";
-      const organizer = row["Organizer"]?.trim() || "";
-      const location = row["Location"]?.trim() || "";
-      const date = row["Date"]?.trim() || "";
-      const mode = row["Mode"]?.trim() || "Online";
-      const role = row["Role"]?.trim() || "Speaker";
+      // Convert to string and handle potential number/date formats
+      const speaker = row["Speaker"] ? String(row["Speaker"]).trim() : "";
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const event = row["Event"] ? String(row["Event"]).trim() : "";
+      const organizer = row["Organizer"] ? String(row["Organizer"]).trim() : "";
+      const location = row["Location"] ? String(row["Location"]).trim() : "";
+      const date = row["Date"] ? String(row["Date"]).trim() : "";
+      const mode = row["Mode"] ? String(row["Mode"]).trim() : "Online";
+      const role = row["Role"] ? String(row["Role"]).trim() : "Speaker";
 
       if (!speaker || !title) continue; // skip invalid rows
 

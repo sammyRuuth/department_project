@@ -93,14 +93,14 @@ const bulkUploadPublishedBooks = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      // Read values from Excel row
-      const title = row["Title"]?.trim();
-      const author = row["Author"]?.trim();
-      const type = row["Type"]?.trim();
-      const publisher = row["Publisher"]?.trim();
-      const series = row["Series"]?.trim() || "";
-      const year = parseInt(row["Year"]);
-      const link = row["Link"]?.trim() || "";
+      // Convert to string and handle potential number formats
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const author = row["Author"] ? String(row["Author"]).trim() : "";
+      const type = row["Type"] ? String(row["Type"]).trim() : "";
+      const publisher = row["Publisher"] ? String(row["Publisher"]).trim() : "";
+      const series = row["Series"] ? String(row["Series"]).trim() : "";
+      const year = row["Year"] ? parseInt(row["Year"]) : null;
+      const link = row["Link"] ? String(row["Link"]).trim() : "";
 
       if (!title || !author || !type || !publisher || !year) continue; // skip invalid rows
 

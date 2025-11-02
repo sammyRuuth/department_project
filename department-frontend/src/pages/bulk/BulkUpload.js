@@ -154,6 +154,20 @@ export default function BulkUpload() {
           ]}
         />
 
+        {/* Department Talks - THIS WAS MISSING! */}
+        <BulkUploader
+          title="Department Talk Bulk Upload"
+          endpoint="/api/v1/departmentTalk/bulk"
+          requiredColumns={[
+            "Speaker",
+            "Designation",
+            "Affiliation",
+            "Title",
+            "Date",
+            "Type"
+          ]}
+        />
+
         {/* Faculty Awards */}
         <BulkUploader
           title="Faculty Award Bulk Upload"

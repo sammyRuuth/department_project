@@ -26,6 +26,9 @@ const upload = multer({
   },
 });
 
+// IMPORTANT: Add bulk upload route (was missing!)
+router.post("/bulk", upload.single("file"), departmentTalkController.bulkUploadTalks);
+
 // Add department talks
 router.post("/", departmentTalkController.createTalk);
 

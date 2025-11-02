@@ -75,12 +75,13 @@ exports.bulkUploadPatents = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const authorsRaw = row["Authors"]?.trim();
-      const title = row["Title"]?.trim();
-      const applicationNumber = row["Application Number"]?.trim();
-      const filingDate = row["Filing Date"]?.trim();
-      const country = row["Country"]?.trim() || "India";
-      const status = row["Status"]?.trim() || "Filed";
+      // Convert to string and handle potential number/date formats
+      const authorsRaw = row["Authors"] ? String(row["Authors"]).trim() : "";
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const applicationNumber = row["Application Number"] ? String(row["Application Number"]).trim() : "";
+      const filingDate = row["Filing Date"] ? String(row["Filing Date"]).trim() : "";
+      const country = row["Country"] ? String(row["Country"]).trim() : "India";
+      const status = row["Status"] ? String(row["Status"]).trim() : "Filed";
 
       if (!authorsRaw || !title || !applicationNumber || !filingDate) continue; // skip invalid rows
 

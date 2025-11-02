@@ -74,11 +74,12 @@ exports.bulkUploadTheses = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const name = row["Name"]?.trim();
-      const studentId = row["StudentId"]?.trim();
-      const topic = row["Topic"]?.trim();
-      const supervisor = row["Supervisor"]?.trim();
-      const coSupervisor = row["CoSupervisor"]?.trim() || "";
+      // Convert to string and handle potential number formats
+      const name = row["Name"] ? String(row["Name"]).trim() : "";
+      const studentId = row["StudentId"] ? String(row["StudentId"]).trim() : "";
+      const topic = row["Topic"] ? String(row["Topic"]).trim() : "";
+      const supervisor = row["Supervisor"] ? String(row["Supervisor"]).trim() : "";
+      const coSupervisor = row["CoSupervisor"] ? String(row["CoSupervisor"]).trim() : "";
       const yearAwarded = row["YearAwarded"] ? parseInt(row["YearAwarded"]) : 2024;
 
       if (!name || !studentId || !topic || !supervisor) continue; // skip invalid rows

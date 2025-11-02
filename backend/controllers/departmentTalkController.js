@@ -74,12 +74,13 @@ exports.bulkUploadTalks = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const speaker = row["Speaker"]?.trim();
-      const designation = row["Designation"]?.trim() || "";
-      const affiliation = row["Affiliation"]?.trim() || "";
-      const title = row["Title"]?.trim();
-      const date = row["Date"]?.trim();
-      const type = row["Type"]?.trim() || "Invited Talk";
+      // Convert to string and handle potential number/date formats
+      const speaker = row["Speaker"] ? String(row["Speaker"]).trim() : "";
+      const designation = row["Designation"] ? String(row["Designation"]).trim() : "";
+      const affiliation = row["Affiliation"] ? String(row["Affiliation"]).trim() : "";
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const date = row["Date"] ? String(row["Date"]).trim() : "";
+      const type = row["Type"] ? String(row["Type"]).trim() : "Invited Talk";
 
       if (!speaker || !title || !date) continue; // skip invalid rows
 

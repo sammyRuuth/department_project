@@ -74,12 +74,13 @@ exports.bulkUploadAwards = async (req, res) => {
     const inserted = [];
 
     for (const row of sheetData) {
-      const facultyName = row["Faculty Name"]?.trim();
-      const title = row["Title"]?.trim();
-      const organization = row["Organization"]?.trim();
-      const journalInfo = row["Journal Info"]?.trim() || "";
-      const year = row["Year"] || new Date().getFullYear();
-      const category = row["Category"]?.trim() || "Faculty";
+      // Convert to string and handle potential number formats
+      const facultyName = row["Faculty Name"] ? String(row["Faculty Name"]).trim() : "";
+      const title = row["Title"] ? String(row["Title"]).trim() : "";
+      const organization = row["Organization"] ? String(row["Organization"]).trim() : "";
+      const journalInfo = row["Journal Info"] ? String(row["Journal Info"]).trim() : "";
+      const year = row["Year"] ? parseInt(row["Year"]) : new Date().getFullYear();
+      const category = row["Category"] ? String(row["Category"]).trim() : "Faculty";
 
       if (!facultyName || !title || !organization) continue; // skip invalid rows
 
