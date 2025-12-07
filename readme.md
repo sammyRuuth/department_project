@@ -5,27 +5,7 @@ A modern, role-based React application for managing departmental data including 
 ![React](https://img.shields.io/badge/React-19.1.1-blue)
 ![React Router](https://img.shields.io/badge/React_Router-7.9.4-red)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.16-38bdf8)
-![License](https://img.shields.io/badge/License-ISC-green)
 
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Environment Setup](#environment-setup)
-- [Running the Application](#running-the-application)
-- [Project Structure](#project-structure)
-- [Authentication](#authentication)
-- [User Roles](#user-roles)
-- [Available Pages](#available-pages)
-- [API Integration](#api-integration)
-- [Browser Compatibility](#browser-compatibility)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
-
----
 
 ## ✨ Features
 
@@ -252,137 +232,6 @@ department-frontend/
 
 ---
 
-## 👥 User Roles
-
-### Admin Role
-
-**Access Level**: Full administrative access
-
-**Dashboard Quick Actions** (12 total):
-- ✅ Add Faculty (admin exclusive)
-- ✅ Add Publication
-- ✅ Add Project
-- ✅ Add Conference
-- ✅ Add PhD Thesis
-- ✅ Add Patent
-- ✅ Add Published Book
-- ✅ Add Department Event
-- ✅ Add Invited Talk
-- ✅ Add Faculty Award
-- ✅ Bulk Upload (admin exclusive)
-- ✅ Change Password
-
-**Special Permissions**:
-- Create and manage faculty accounts
-- Access bulk upload functionality
-- Full system administration
-
-### Faculty Role
-
-**Access Level**: Resource contributor
-
-**Dashboard Quick Actions** (10 total):
-- ✅ Add Publication
-- ✅ Add Project
-- ✅ Add Conference
-- ✅ Add PhD Thesis
-- ✅ Add Patent
-- ✅ Add Published Book
-- ✅ Add Department Event
-- ✅ Add Invited Talk
-- ✅ Add Faculty Award
-- ✅ Change Password
-
-**Restrictions**:
-- ❌ Cannot add other faculty members
-- ❌ Cannot access bulk upload
-- ❌ Cannot perform administrative tasks
-
----
-
-## 📄 Available Pages
-
-### Public Pages (No Authentication Required)
-
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/login` | Login | Main login page with credentials |
-| `/forgot-password` | ForgotPassword | Password recovery request |
-
-### Protected Pages (Authentication Required)
-
-| Route | Component | Description | Role |
-|-------|-----------|-------------|------|
-| `/dashboard` | Dashboard | Main landing page | All |
-| `/change-password` | ChangePassword | Password change page | All |
-| `/forms/faculty` | FacultyForm | Add faculty member | Admin |
-| `/forms/publication` | PublicationForm | Add publication | All |
-| `/forms/project` | ProjectForm | Add project | All |
-| `/forms/conference` | ConferenceForm | Add conference | All |
-| `/forms/phd-thesis` | PhdThesisForm | Add PhD thesis | All |
-| `/forms/patent` | PatentForm | Add patent | All |
-| `/forms/published-book` | PublishedBookForm | Add book/chapter | All |
-| `/forms/department-event` | DepartmentEventForm | Add event | All |
-| `/forms/invited-talk` | InvitedTalkForm | Add invited talk | All |
-| `/forms/faculty-award` | FacultyAwardForm | Add award | All |
-| `/bulk-upload` | BulkUpload | Bulk data import | Admin |
-
----
-
-## 🔌 API Integration
-
-### Backend Endpoints Used
-
-#### Authentication
-```
-POST   /api/v1/auth/login              - User login
-GET    /api/v1/auth/me                 - Get current user
-PUT    /api/v1/auth/updatepassword     - Change password
-POST   /api/v1/auth/forgotpassword     - Request password reset
-PUT    /api/v1/auth/resetpassword/:token - Reset password
-```
-
-#### Faculty
-```
-GET    /api/v1/faculty                 - Get all faculty
-POST   /api/v1/faculty                 - Add faculty (Admin only)
-PUT    /api/v1/faculty/:id             - Update faculty
-DELETE /api/v1/faculty/:id             - Delete faculty
-POST   /api/v1/faculty/bulk-upload     - Bulk upload faculty
-```
-
-#### Publications
-```
-GET    /api/v1/publication             - Get all publications
-POST   /api/v1/publication             - Add publication
-PUT    /api/v1/publication/:id         - Update publication
-DELETE /api/v1/publication/:id         - Delete publication
-POST   /api/v1/publication/bulk        - Bulk upload publications
-```
-
-#### Projects
-```
-GET    /api/v1/project                 - Get all projects
-POST   /api/v1/project/add             - Add project
-PUT    /api/v1/project/:id             - Update project
-DELETE /api/v1/project/:id             - Delete project
-POST   /api/v1/project/bulk            - Bulk upload projects
-```
-
-*(Similar patterns for Conference, PhD Thesis, Patent, Published Book, Department Event, Invited Talk, Faculty Award)*
-
-### Request Headers
-
-All authenticated requests include:
-```javascript
-{
-  "Authorization": "Bearer <JWT_TOKEN>",
-  "Content-Type": "application/json"
-}
-```
-
----
-
 ## 🌐 Browser Compatibility
 
 ### Supported Browsers
@@ -398,106 +247,6 @@ All authenticated requests include:
 - **LocalStorage**: All modern browsers
 - **CSS Grid**: Chrome 57+, Firefox 52+, Safari 10.1+
 - **Fetch API**: Chrome 42+, Firefox 39+, Safari 10.1+
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### 1. "Network Error" on Login
-
-**Problem**: Cannot connect to backend API
-
-**Solutions**:
-- ✅ Verify backend is running on `http://localhost:8080`
-- ✅ Check CORS is enabled in backend
-- ✅ Confirm API URLs in code match backend
-- ✅ Check browser console for specific errors
-
-#### 2. Blank Page After Login
-
-**Problem**: Dashboard doesn't load after successful login
-
-**Solutions**:
-- ✅ Clear localStorage: `localStorage.clear()`
-- ✅ Check browser console for errors
-- ✅ Verify token is being saved: `localStorage.getItem('token')`
-- ✅ Ensure `/api/v1/auth/me` endpoint works
-
-#### 3. Password Not Saving in Browser
-
-**Problem**: Browser doesn't offer to save password
-
-**Solutions**:
-- ✅ Use HTTPS or localhost (browsers restrict to secure contexts)
-- ✅ Ensure `autoComplete` attributes are present
-- ✅ Check browser password save settings
-- ✅ Try different browser
-
-#### 4. Faculty Sees Admin Features
-
-**Problem**: Wrong role-based UI rendering
-
-**Solutions**:
-- ✅ Clear localStorage and login again
-- ✅ Verify role is correctly saved: `localStorage.getItem('role')`
-- ✅ Check backend returns correct role in login response
-- ✅ Refresh page after role change
-
-#### 5. Forms Not Submitting
-
-**Problem**: Form submission fails or hangs
-
-**Solutions**:
-- ✅ Check network tab for API response
-- ✅ Verify all required fields are filled
-- ✅ Check backend logs for errors
-- ✅ Ensure token is valid (not expired)
-
-### Debug Mode
-
-Enable detailed logging:
-
-```javascript
-// Add to any component
-console.log('Token:', localStorage.getItem('token'));
-console.log('Role:', localStorage.getItem('role'));
-console.log('User:', localStorage.getItem('isFirstLogin'));
-```
-
-### Reset Application State
-
-```javascript
-// Clear all stored data
-localStorage.clear();
-// Refresh page
-window.location.reload();
-```
-
----
-
-## 🔒 Security Best Practices
-
-### Implemented Security Features
-
-- ✅ JWT token authentication
-- ✅ Protected routes with auth guards
-- ✅ Password visibility toggle (not stored in plain text)
-- ✅ Auto logout on token expiration
-- ✅ Role-based UI rendering
-- ✅ HTTPS recommended for production
-
-### Additional Recommendations
-
-For production deployment:
-
-1. **Use HTTPS**: Always serve over HTTPS
-2. **HttpOnly Cookies**: Consider moving from localStorage to httpOnly cookies
-3. **CSRF Protection**: Implement CSRF tokens
-4. **Rate Limiting**: Add rate limiting on login endpoint
-5. **Content Security Policy**: Add CSP headers
-6. **Environment Variables**: Use env variables for API URLs
 
 ---
 
@@ -533,34 +282,6 @@ npm install --save-dev gh-pages
 # Deploy:
 npm run deploy
 ```
-
-### Environment Variables for Production
-
-Update API URLs before building:
-```javascript
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-```
-
----
-
-## 📊 Performance Optimization
-
-### Implemented Optimizations
-
-- ✅ Code splitting with React Router
-- ✅ Lazy loading for components
-- ✅ Optimized bundle size
-- ✅ Minified production build
-- ✅ Tree shaking enabled
-
-### Additional Tips
-
-- Use production build for deployment
-- Enable gzip compression on server
-- Implement service workers for PWA
-- Add image optimization
-- Use CDN for static assets
-
 ---
 
 ## 🧪 Testing
@@ -577,22 +298,7 @@ npm test
 npm test -- --coverage
 ```
 
-### Test Files Location
-
-- Unit tests: `src/**/*.test.js`
-- Component tests: `src/components/**/*.test.js`
-- Integration tests: `src/integration/**/*.test.js`
-
----
-
-## 📚 Additional Documentation
-
-- **Authentication Guide**: See backend repository for auth setup
-- **API Documentation**: Refer to backend API docs
-- **Design System**: Tailwind CSS documentation
-- **Component Library**: React documentation
-
----
+--- 
 
 ## 🤝 Contributing
 
@@ -603,79 +309,13 @@ npm test -- --coverage
 3. Commit changes: `git commit -m 'Add some feature'`
 4. Push to branch: `git push origin feature/your-feature`
 5. Submit a pull request
-
-### Code Style
-
-- Use ESLint for code linting
-- Follow React best practices
-- Write meaningful commit messages
-- Add comments for complex logic
-- Keep components focused and small
-
-### Testing Requirements
-
-- Add tests for new features
-- Ensure all tests pass before PR
-- Maintain test coverage above 80%
-
----
-
-## 📝 License
-
-This project is licensed under the ISC License.
-
----
-
-## 👥 Authors
-
-- **Kalp Dalsania** - Initial work
-
----
-
-## 🙏 Acknowledgments
-
-- Create React App for project scaffolding
-- Tailwind CSS for utility-first styling
-- React Router for routing solution
-- All open-source contributors
-
 ---
 
 ## 📞 Support
 
-For support, email your-email@example.com or open an issue in the repository.
+For support, email saksham1437@gmail.com or open an issue in the repository.
 
 ---
 
-## 🔄 Changelog
-
-### Version 1.0.0 (Current)
-- ✅ JWT authentication system
-- ✅ Role-based dashboards
-- ✅ Password visibility toggle
-- ✅ Browser password save
-- ✅ All resource management forms
-- ✅ Bulk upload functionality
-- ✅ Responsive design
-- ✅ Protected routes
-
----
-
-## 🗺️ Roadmap
-
-### Upcoming Features
-
-- [ ] User profile editing
-- [ ] Admin panel for user management
-- [ ] Advanced search and filtering
-- [ ] Export data functionality
-- [ ] Dark mode support
-- [ ] Multi-language support
-- [ ] Real-time notifications
-- [ ] Activity logging
-- [ ] Data visualization dashboard
-- [ ] Mobile app version
-
----
 
 **Built with ❤️ using React and Tailwind CSS**
