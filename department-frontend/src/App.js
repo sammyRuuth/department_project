@@ -1,4 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+// Auth Pages
+import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ChangePassword from "./pages/auth/ChangePassword";
+import Dashboard from "./pages/Dashboard";
+
+// Form Pages
 import FacultyForm from "./pages/forms/FacultyForm";
 import PublicationForm from "./pages/forms/PublicationForm";
 import ProjectForm from "./pages/forms/ProjectForm";
@@ -11,118 +19,136 @@ import InvitedTalkForm from "./pages/forms/InvitedTalkForm";
 import FacultyAwardForm from "./pages/forms/FacultyAwardForm";
 import BulkUpload from "./pages/bulk/BulkUpload";
 
+// Components
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        {/* Navigation Bar */}
-        <nav className="bg-white shadow-lg sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="py-4">
-              {/* Logo/Title */}
-              <div className="mb-3">
-                <Link to="/" className="text-2xl font-bold text-blue-600">
-                  Department Portal
-                </Link>
-              </div>
-              
-              {/* Navigation Links */}
-              <div className="flex flex-wrap gap-2">
-                <Link 
-                  to="/forms/faculty" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Faculty
-                </Link>
-                <Link 
-                  to="/forms/publication" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Publication
-                </Link>
-                <Link 
-                  to="/forms/project" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Project
-                </Link>
-                <Link 
-                  to="/forms/conference" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Conference
-                </Link>
-                <Link 
-                  to="/forms/phd-thesis" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  PhD Thesis
-                </Link>
-                <Link 
-                  to="/forms/patent" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Patent
-                </Link>
-                <Link 
-                  to="/forms/published-book" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Published Book
-                </Link>
-                <Link 
-                  to="/forms/department-event" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Department Event
-                </Link>
-                <Link 
-                  to="/forms/invited-talk" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Invited Talk
-                </Link>
-                <Link 
-                  to="/forms/faculty-award" 
-                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition"
-                >
-                  Faculty Award
-                </Link>
-                
-                {/* Bulk Upload - Highlighted */}
-                <Link 
-                  to="/bulk-upload" 
-                  className="px-4 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition font-medium ml-auto"
-                >
-                  📤 Bulk Upload
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Routes>
+          {/* Public Routes - Auth Pages */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          
+          {/* Semi-Protected - Change Password */}
+          <Route path="/change-password" element={<ChangePassword />} />
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <Routes>
-            {/* Home */}
-            <Route path="/" element={<FacultyForm />} />
+          {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
 
-            {/* Manual Forms */}
-            <Route path="/forms/faculty" element={<FacultyForm />} />
-            <Route path="/forms/publication" element={<PublicationForm />} />
-            <Route path="/forms/project" element={<ProjectForm />} />
-            <Route path="/forms/conference" element={<ConferenceForm />} />
-            <Route path="/forms/phd-thesis" element={<PhdThesisForm />} />
-            <Route path="/forms/patent" element={<PatentForm />} />
-            <Route path="/forms/published-book" element={<PublishedBookForm />} />
-            <Route path="/forms/department-event" element={<DepartmentEventForm />} />
-            <Route path="/forms/invited-talk" element={<InvitedTalkForm />} />
-            <Route path="/forms/faculty-award" element={<FacultyAwardForm />} />
+          {/* Manual Forms - Protected */}
+          <Route 
+            path="/forms/faculty" 
+            element={
+              <ProtectedRoute>
+                <FacultyForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/publication" 
+            element={
+              <ProtectedRoute>
+                <PublicationForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/project" 
+            element={
+              <ProtectedRoute>
+                <ProjectForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/conference" 
+            element={
+              <ProtectedRoute>
+                <ConferenceForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/phd-thesis" 
+            element={
+              <ProtectedRoute>
+                <PhdThesisForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/patent" 
+            element={
+              <ProtectedRoute>
+                <PatentForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/published-book" 
+            element={
+              <ProtectedRoute>
+                <PublishedBookForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/department-event" 
+            element={
+              <ProtectedRoute>
+                <DepartmentEventForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/invited-talk" 
+            element={
+              <ProtectedRoute>
+                <InvitedTalkForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/forms/faculty-award" 
+            element={
+              <ProtectedRoute>
+                <FacultyAwardForm />
+              </ProtectedRoute>
+            } 
+          />
 
-            {/* Bulk Upload */}
-            <Route path="/bulk-upload" element={<BulkUpload />} />
-          </Routes>
-        </div>
+          {/* Bulk Upload - Protected */}
+          <Route 
+            path="/bulk-upload" 
+            element={
+              <ProtectedRoute>
+                <BulkUpload />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Redirect root to login or dashboard */}
+          <Route 
+            path="/" 
+            element={
+              localStorage.getItem("token") ? 
+                <Navigate to="/dashboard" replace /> : 
+                <Navigate to="/login" replace />
+            } 
+          />
+
+          {/* Catch all - redirect to login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       </div>
     </Router>
   );
